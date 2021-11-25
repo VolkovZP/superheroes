@@ -140,6 +140,7 @@ module.exports.deleteSuperhero = async (req, res, next) => {
 
 /**get all Heroes */
 module.exports.getAllSuperheroes = async (req, res, next) => {
+    const { pagination = {} } = req;
     try {
         const heroes = await Superhero.findAll({
             include: [
@@ -151,6 +152,7 @@ module.exports.getAllSuperheroes = async (req, res, next) => {
                     },
                 },
             ],
+            ...pagination,
         });
         res.status(200).send({
             data: heroes,
