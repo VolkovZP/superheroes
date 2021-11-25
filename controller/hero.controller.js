@@ -3,6 +3,8 @@ const { Op } = require('sequelize');
 const createError = require('http-errors');
 const { Superhero, Superpower, sequelize } = require('../models');
 const queryInterface = sequelize.getQueryInterface();
+
+
 /**CREATE */
 module.exports.createHero = async (req, res, next) => {
     try {
