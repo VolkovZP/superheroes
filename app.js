@@ -1,6 +1,6 @@
 const express = require("express");
 const router = require('./routers')
-const errorHandler = require('./middlewares/error.handlers.mw');
+const errorHandler = require('./middleware/error.mw');
 const app = express();
 app.use(express.json()); //data stream => json => js object => req.body
 app.use(router);

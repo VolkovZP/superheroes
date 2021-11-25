@@ -69,6 +69,50 @@ module.exports.getSuperhero = async (req, res, next) => {
 /**update */
 
 
+module.exports.updateSuperhero = async (req, res, next) => {
+    try {
+        const {
+            params: { id },
+            body,
+        } = req;
+        let powersArr = [];
+
+        const [rowsCount, updatedSuperhero] = await Superhero.update(body, {
+            where: { id },
+            returning: true,
+        });
+
+        if (rowsCount !== 1) {
+            return next(createError(400, "User can't be updated"));
+        }
+
+
+        if (body.superpowers) {
+            const powers = await Superpower.findAll({
+                where: {
+                    id: {
+                        [Op.in]: body.superpowers,
+                    },
+                },
+            });
+            powersArr = powers.map(power => {
+                return {
+                    power_id: power.dataValues.id,
+                    hero_id: id,
+                    created_at: new Date(),
+                    updated_at: new Date(),
+                };
+            });
+            await queryInterface.bulkInsert('heroes_to_superpowers', powersArr, {});
+        }
+
+        res.status(200).send({
+            data: { updatedSuperhero, powersArr },
+        });
+    } catch (err) {
+        next(err);
+    }
+};
 
 
 
