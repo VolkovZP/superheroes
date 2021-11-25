@@ -3,14 +3,13 @@ const { Op } = require('sequelize');
 const createError = require('http-errors');
 const { Superhero, Superpower, sequelize } = require('../models');
 const queryInterface = sequelize.getQueryInterface();
+/**CREATE */
 module.exports.createHero = async (req, res, next) => {
     try {
         const { body } = req;
         const createdHero = await Superhero.create(body);
 
         let powersArr = [];
-
-
 
         if (body.superpowers) {
             powersArr = await Superpower.findAll({
@@ -20,6 +19,7 @@ module.exports.createHero = async (req, res, next) => {
                     },
                 },
             })
+            console.log(powersArr)
             powersArr = powersArr.map(power => ({
                 power_id: power.dataValues.id,
                 hero_id: createdHero.id,
@@ -37,3 +37,31 @@ module.exports.createHero = async (req, res, next) => {
     }
 };
 
+/**GET HERO  */
+
+module.exports.getSuperhero = async (req, res, next) => {
+    try {
+        const {
+            params: { id },
+        } = req;
+
+        const hero = await Superhero.findByPk(id, {
+            include: [
+                {
+                    model: Superpower,
+                    through: {
+                        attributes: [],
+                    },
+                },
+            ],
+        });
+
+        if (!hero) {
+            return next(createError(404, 'User not found'));
+        }
+
+        res.send(hero);
+    } catch (err) {
+        next(err);
+    }
+};
