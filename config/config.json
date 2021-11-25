@@ -4,7 +4,9 @@
     "password": "0000",
     "database": "superheroes",
     "host": "127.0.0.1",
-    "dialect": "postgres"
+    "dialect": "postgres",
+    "seederStorage": "json",
+    "migrationStorage": "json"
   },
   "test": {},
   "production": {}
