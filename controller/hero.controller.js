@@ -65,3 +65,12 @@ module.exports.getSuperhero = async (req, res, next) => {
         next(err);
     }
 };
+
+/**update */
+
+
+
+
+
+/**delete */
+
