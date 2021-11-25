@@ -1,17 +1,33 @@
 /**CREATE */
 const { Op } = require('sequelize');
 const createError = require('http-errors');
-const { Superhero, Superpower, sequelize } = require('../models');
+const { Superhero, Superpower, sequelize, Image } = require('../models');
 const queryInterface = sequelize.getQueryInterface();
 
 
 /**CREATE */
 module.exports.createHero = async (req, res, next) => {
     try {
-        const { body } = req;
+        const { body, files = [] } = req;
         const createdHero = await Superhero.create(body);
-
         let powersArr = [];
+        let images = [];
+
+        if (files.length) {
+            console.log(files)
+            images = files.map(file => {
+                return {
+                    hero_id: createdHero.id,
+                    image_path: file.filename,
+                    created_at: new Date(),
+                    updated_at: new Date(),
+                };
+            });
+            await queryInterface.bulkInsert('images', images, {});
+
+
+        }
+
 
         if (body.superpowers) {
             powersArr = await Superpower.findAll({
@@ -21,7 +37,6 @@ module.exports.createHero = async (req, res, next) => {
                     },
                 },
             })
-            console.log(powersArr)
             powersArr = powersArr.map(power => ({
                 power_id: power.dataValues.id,
                 hero_id: createdHero.id,
@@ -32,7 +47,7 @@ module.exports.createHero = async (req, res, next) => {
         }
 
         res.status(201).send({
-            data: { createdHero, powersArr },
+            data: { createdHero, images, powersArr },
         });
     } catch (err) {
         next(err);
@@ -153,11 +168,15 @@ module.exports.getAllSuperheroes = async (req, res, next) => {
                         attributes: [],
                     },
                 },
+                {
+                    model: Image,
+                    attributes: ["image_path"],
+                },
             ],
             ...pagination,
         });
         res.status(200).send({
-            data: heroes,
+            data: heroes
         });
     } catch (err) {
         next(err);
