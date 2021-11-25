@@ -4,8 +4,10 @@ const SuperHeroController = require('../controller/hero.controller');
 const router = Router();
 
 router.post('/', SuperHeroController.createHero);
+router.get('/', SuperHeroController.getAllSuperheroes);
 router.get('/:id', SuperHeroController.getSuperhero);
 router.patch('/:id', SuperHeroController.updateSuperhero);
+router.delete('/:id', SuperHeroController.deleteSuperhero);
 
 
 module.exports = router;

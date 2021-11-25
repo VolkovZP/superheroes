@@ -57,7 +57,7 @@ module.exports.getSuperhero = async (req, res, next) => {
         });
 
         if (!hero) {
-            return next(createError(404, 'User not found'));
+            return next(createError(404, 'Hero not found'));
         }
 
         res.send(hero);
@@ -118,3 +118,44 @@ module.exports.updateSuperhero = async (req, res, next) => {
 
 /**delete */
 
+module.exports.deleteSuperhero = async (req, res, next) => {
+    try {
+        const {
+            params: { id },
+        } = req;
+
+        const rowsCount = await Superhero.destroy({
+            where: { id },
+        });
+
+        if (rowsCount !== 1) {
+            return next(createError(404, 'User not found'));
+        }
+
+        res.send({ data: rowsCount });
+    } catch (err) {
+        next(err);
+    }
+};
+
+/**get all Heroes */
+module.exports.getAllSuperheroes = async (req, res, next) => {
+    try {
+        const heroes = await Superhero.findAll({
+            include: [
+                {
+                    model: Superpower,
+                    attributes: ['id', "name"],
+                    through: {
+                        attributes: [],
+                    },
+                },
+            ],
+        });
+        res.status(200).send({
+            data: heroes,
+        });
+    } catch (err) {
+        next(err);
+    }
+};
